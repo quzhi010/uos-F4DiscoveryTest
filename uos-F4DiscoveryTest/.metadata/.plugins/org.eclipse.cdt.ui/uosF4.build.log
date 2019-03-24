@@ -1,0 +1,14 @@
+13:40:29 **** Incremental Build of configuration Debug for project uosF4 ****
+make all 
+Building file: ../src/initialize_hardware.c
+Invoking: Cross ARM C Compiler
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-move-loop-invariants -pipe -mapcs-frame -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Wfloat-equal  -g3 -DDEBUG -DTRACE -DOS_USE_TRACE_SEMIHOSTING_DEBUG -DSTM32F407xx -DOS_USE_SEMIHOSTING_SYSCALLS -I"../include" -I../cube-mx/Inc -std=gnu11 -Wno-sign-conversion -Wno-conversion -Wno-attribute-alias -Wno-cast-function-type -MMD -MP -MF"src/initialize_hardware.d" -MT"src/initialize_hardware.o" -c -o "src/initialize_hardware.o" "../src/initialize_hardware.c"
+../src/initialize_hardware.c:30:10: fatal error: cmsis-plus/rtos/os-hooks.h: No such file or directory
+ #include <cmsis-plus/rtos/os-hooks.h>
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [src/initialize_hardware.o] Error 1
+"make all" terminated with exit code 2. Build might be incomplete.
+
+13:40:30 Build Failed. 2 errors, 0 warnings. (took 866ms)
+

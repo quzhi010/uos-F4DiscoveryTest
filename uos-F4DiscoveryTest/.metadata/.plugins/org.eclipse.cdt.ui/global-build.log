@@ -1,0 +1,7 @@
+14:14:33 **** Clean-only build of configuration Debug for project f4discovery-blinky-micro-os-plus ****
+make clean 
+make: *** No rule to make target `clean'.  Stop.
+"make clean" terminated with exit code 2. Build might be incomplete.
+
+14:14:33 Build Failed. 1 errors, 0 warnings. (took 196ms)
+

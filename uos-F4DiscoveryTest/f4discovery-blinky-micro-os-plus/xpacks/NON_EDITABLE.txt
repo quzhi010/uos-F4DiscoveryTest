@@ -1,0 +1,4 @@
+This folder was automatically generated.
+It contains links to all xPacks used within this project.
+Except Git projects, all other should normally be read-only.
+Prefereably do not use them directly, but prepare a nice 'generated' folder.
