@@ -157,126 +157,126 @@ led blink_leds[1] =
 int
 os_main (int argc, char* argv[])
 {
-  // Send a greeting to the trace device (skipped on Release).
-  trace_puts ("Hello ARM World!");
+    // Send a greeting to the trace device (skipped on Release).
+    trace_puts ("Hello ARM World!");
 
-  // Send a message to the standard output.
-  puts ("Standard output message.");
+    // Send a message to the standard output.
+    puts ("Standard output message.");
 
-  // Send a message to the standard error.
-  fprintf (stderr, "Standard error message.\n");
+    // Send a message to the standard error.
+    fprintf (stderr, "Standard error message.\n");
 
-  // At this stage the system clock should have already been configured
-  // at high speed.
-  trace_printf ("System clock: %u Hz\n", SystemCoreClock);
+    // At this stage the system clock should have already been configured
+    // at high speed.
+    trace_printf ("System clock: %u Hz\n", SystemCoreClock);
 
-  // Perform all necessary initialisations for the LEDs.
-  for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
+    // Perform all necessary initialisations for the LEDs.
+    for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
     {
-      blink_leds[i].power_up ();
+        blink_leds[i].power_up ();
     }
 
-  uint32_t seconds = 0;
+    uint32_t seconds = 0;
 
 #define LOOP_COUNT (1 << (sizeof(blink_leds) / sizeof(blink_leds[0])))
 
-  int loops = LOOP_COUNT > 2 ? LOOP_COUNT : (5);
-  if (argc > 1)
+    int loops = LOOP_COUNT > 2 ? LOOP_COUNT : (5);
+    if (argc > 1)
     {
-      // If defined, get the number of loops from the command line,
-      // configurable via semihosting.
-      loops = atoi (argv[1]);
-      if (loops < LOOP_COUNT)
+        // If defined, get the number of loops from the command line,
+        // configurable via semihosting.
+        loops = atoi (argv[1]);
+        if (loops < LOOP_COUNT)
         {
-          loops = LOOP_COUNT;
+            loops = LOOP_COUNT;
         }
     }
 
-  for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
+    for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
     {
-      blink_leds[i].turn_on ();
+        blink_leds[i].turn_on ();
     }
 
-  // First second is long.
-  sysclock.sleep_for (sysclock.frequency_hz);
+    // First second is long.
+    sysclock.sleep_for (sysclock.frequency_hz);
 
-  for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
+    for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
     {
-      blink_leds[i].turn_off ();
+        blink_leds[i].turn_off ();
     }
 
-  sysclock.sleep_for (BLINK_OFF_TICKS);
+    sysclock.sleep_for (BLINK_OFF_TICKS);
 
-#if defined (__ARM_FP)
-  float f1 = 1.1f;
-  float f2 = 10.0f;
-  for (int i = 0; i < 3; ++i)
+    #if defined (__ARM_FP)
+    float f1 = 1.1f;
+    float f2 = 10.0f;
+    for (int i = 0; i < 3; ++i)
     {
-      f2 *= f1;
-      clock::duration_t d = (clock::duration_t) (f2);
-      sysclock.sleep_for (d);
+        f2 *= f1;
+        clock::duration_t d = (clock::duration_t) (f2);
+        sysclock.sleep_for (d);
     }
-#endif
+    #endif
 
-  ++seconds;
-  trace_printf ("Second %u\n", seconds);
+    ++seconds;
+    trace_printf ("Second %u\n", seconds);
 
-  if ((sizeof(blink_leds) / sizeof(blink_leds[0])) > 1)
+    if ((sizeof(blink_leds) / sizeof(blink_leds[0])) > 1)
     {
-      // Blink individual LEDs.
-      for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
+        // Blink individual LEDs.
+        for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
         {
-          blink_leds[i].turn_on ();
-          sysclock.sleep_for (BLINK_ON_TICKS);
+            blink_leds[i].turn_on ();
+            sysclock.sleep_for (BLINK_ON_TICKS);
 
-          blink_leds[i].turn_off ();
-          sysclock.sleep_for (BLINK_OFF_TICKS);
+            blink_leds[i].turn_off ();
+            sysclock.sleep_for (BLINK_OFF_TICKS);
 
-          ++seconds;
-          trace_printf ("Second %u\n", seconds);
+            ++seconds;
+            trace_printf ("Second %u\n", seconds);
         }
 
-      // Blink binary.
-      for (int i = 0; i < loops; i++)
+        // Blink binary.
+        for (int i = 0; i < loops; i++)
         {
-          for (size_t l = 0; l < (sizeof(blink_leds) / sizeof(blink_leds[0]));
-              ++l)
+            for (size_t l = 0; l < (sizeof(blink_leds) / sizeof(blink_leds[0]));
+            ++l)
             {
-              blink_leds[l].toggle ();
-              if (blink_leds[l].is_on ())
+                blink_leds[l].toggle ();
+                if (blink_leds[l].is_on ())
                 {
                   break;
                 }
             }
-          sysclock.sleep_for (sysclock.frequency_hz);
+            sysclock.sleep_for (sysclock.frequency_hz);
 
-          ++seconds;
-          trace_printf ("Second %u\n", seconds);
+            ++seconds;
+            trace_printf ("Second %u\n", seconds);
         }
     }
-  else
+    else
     {
-      for (int i = 0; i < loops; i++)
+        for (int i = 0; i < loops; i++)
         {
-          blink_leds[0].turn_on ();
-          sysclock.sleep_for (BLINK_ON_TICKS);
+            blink_leds[0].turn_on ();
+            sysclock.sleep_for (BLINK_ON_TICKS);
 
-          blink_leds[0].turn_off ();
-          sysclock.sleep_for (BLINK_OFF_TICKS);
+            blink_leds[0].turn_off ();
+            sysclock.sleep_for (BLINK_OFF_TICKS);
 
-          ++seconds;
-          trace_printf ("Second %u\n", seconds);
+            ++seconds;
+            trace_printf ("Second %u\n", seconds);
         }
     }
 
-  for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
+    for (size_t i = 0; i < (sizeof(blink_leds) / sizeof(blink_leds[0])); ++i)
     {
-      blink_leds[i].turn_on ();
+        blink_leds[i].turn_on ();
     }
 
-  sysclock.sleep_for (sysclock.frequency_hz);
+    sysclock.sleep_for (sysclock.frequency_hz);
 
-  return 0;
+    return 0;
 }
 
 #pragma GCC diagnostic pop
