@@ -178,7 +178,8 @@ os_main (int argc, char* argv[])
 
     uint32_t seconds = 0;
 
-#define LOOP_COUNT (1 << (sizeof(blink_leds) / sizeof(blink_leds[0])))
+//#define LOOP_COUNT (1 << (sizeof(blink_leds) / sizeof(blink_leds[0])))
+#define LOOP_COUNT 8000
 
     int loops = LOOP_COUNT > 2 ? LOOP_COUNT : (5);
     if (argc > 1)

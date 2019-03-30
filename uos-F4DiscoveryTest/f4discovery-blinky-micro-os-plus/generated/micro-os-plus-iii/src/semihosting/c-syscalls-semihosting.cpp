@@ -1162,6 +1162,10 @@ os_startup_initialize_args (int* p_argc, char*** p_argv)
   cmd_block.size = sizeof(args_buf) - 1;
 
   int ret = call_host (SEMIHOSTING_SYS_GET_CMDLINE, &cmd_block);
+  if (cmd_block.size > 0)
+  {
+      trace_printf ("cmd_block.cmd line %s\n", cmd_block.command_line);
+  }
   if (ret == 0)
     {
       // In case the host send more than we can chew, limit the
