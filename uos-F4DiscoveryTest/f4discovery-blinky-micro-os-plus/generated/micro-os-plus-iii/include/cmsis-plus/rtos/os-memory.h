@@ -1375,7 +1375,7 @@ namespace os
       inline out_of_memory_handler_t
       memory_resource::out_of_memory_handler (out_of_memory_handler_t handler)
       {
-        trace::printf ("%s(%p) @%p %s\n", __func__, handler, this, name ());
+        //trace::printf ("%s(%p) @%p %s\n", __func__, handler, this, name ());
 
         out_of_memory_handler_t tmp = out_of_memory_handler_;
         out_of_memory_handler_ = handler;

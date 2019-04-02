@@ -17,6 +17,8 @@
 
 #define GPIO_NUMBER           ((uint32_t)16U)
 
+using namespace STM32F407;
+
 MyGPIO::MyGPIO(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init) {
     // TODO Auto-generated constructor stub
     GPIO_Port = GPIOx;

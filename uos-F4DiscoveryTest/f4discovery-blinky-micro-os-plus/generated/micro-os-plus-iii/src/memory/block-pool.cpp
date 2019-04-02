@@ -42,7 +42,7 @@ namespace os
      */
     block_pool::~block_pool ()
     {
-      trace::printf ("%s() @%p %s\n", __func__, this, this->name ());
+      //trace::printf ("%s() @%p %s\n", __func__, this, this->name ());
     }
 
 #pragma GCC diagnostic push

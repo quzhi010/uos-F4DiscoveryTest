@@ -82,7 +82,7 @@
 #endif
 
 
-#define OS_TRACE_RTOS_THREAD
+//#define OS_TRACE_RTOS_THREAD
 #define OS_TRACE_RTOS_RTC_TICK
 
 #define OS_INCLUDE_RTOS_DRTM

@@ -7,24 +7,34 @@
 
 #include "MyUart.h"
 
+using namespace STM32F407;
+
 MyUart::MyUart(uart_instance_t *uart_inst) {
     // TODO Auto-generated constructor stub
     uart_instance = uart_inst;
 
-    __HAL_RCC_DMA1_CLK_ENABLE();
-    __HAL_RCC_USART2_CLK_ENABLE();
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __IO uint32_t tmpreg = 0x00U;
+    RCC->AHB1ENR |= uart_inst->dma_clck_mask;
+    tmpreg = RCC->AHB1ENR  & uart_inst->dma_clck_mask;
+    UNUSED(tmpreg);
+    RCC->APB1ENR |= uart_inst->uart_clck_mask;
+    tmpreg = RCC->APB1ENR  & uart_inst->uart_clck_mask;
+    UNUSED(tmpreg);
+    RCC->AHB1ENR |= uart_inst->gpio_clck_mask;
+    tmpreg = RCC->AHB1ENR & uart_inst->gpio_clck_mask;
+    UNUSED(tmpreg);
 
-    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 15, 15);
-    HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-    HAL_NVIC_SetPriority(USART2_IRQn, 15, 15);
-    HAL_NVIC_EnableIRQ(USART2_IRQn);
+    HAL_NVIC_SetPriority(uart_inst->rx_irq, 15, 15);
+    HAL_NVIC_EnableIRQ(uart_inst->rx_irq);
+    HAL_NVIC_SetPriority(uart_inst->tx_irq, 15, 15);
+    HAL_NVIC_EnableIRQ(uart_inst->tx_irq);
 
     gpio_rx = new MyGPIO(uart_inst->rx_gpio_port, uart_inst->rx_gpio_init);
     gpio_rx = new MyGPIO(uart_inst->tx_gpio_port, uart_inst->tx_gpio_init);
     tx_dma = new MyDMA(uart_inst->tx_dma_instance, uart_inst->tx_dma_init);
     rx_dma = new MyDMA(uart_inst->rx_dma_instance, uart_inst->rx_dma_init);
 
+    uart_instance->serial_instantce->CR1 = 0;
     uart_inst->serial_instantce->CR1 &=  ~USART_CR1_UE;
     uart_setconfig();
     CLEAR_BIT(uart_inst->serial_instantce->CR2, (USART_CR2_LINEN | USART_CR2_CLKEN));
@@ -33,51 +43,43 @@ MyUart::MyUart(uart_instance_t *uart_inst) {
 }
 
 void MyUart::transmit(uint8_t *data, uint8_t size) {
-    //HAL_UART_Transmit_DMA(uart_module, data, size);
     uint32_t *tmp;
 
-    /* Enable the UART transmit DMA Stream */
     tmp = (uint32_t*)&data;
     tx_dma->dma_start(*(uint32_t*)tmp, (uint32_t)&uart_instance->serial_instantce->DR, size);
 
-    /* Clear the TC flag in the SR register by writing 0 to it */
     uart_instance->serial_instantce->SR = ~UART_FLAG_TC;
 
-    /* Enable the DMA transfer for transmit request by setting the DMAT bit
-     in the UART CR3 register */
     SET_BIT(uart_instance->serial_instantce->CR3, USART_CR3_DMAT);
     SET_BIT(uart_instance->serial_instantce->CR1, USART_CR1_TCIE);
 }
 
-void MyUart::receive(uint8_t *data, uint8_t size) {
+void MyUart::receive(volatile uint8_t *data, uint8_t size) {
     uint32_t *tmp;
 
     /* Enable the DMA Stream */
     tmp = (uint32_t*)&data;
     rx_dma->dma_start_it((uint32_t)&uart_instance->serial_instantce->DR, *(uint32_t*)tmp, size);
 
-    /* Enable the UART Parity Error Interrupt */
-    SET_BIT(uart_instance->serial_instantce->CR1, USART_CR1_PEIE);
-
-    /* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
-    SET_BIT(uart_instance->serial_instantce->CR3, USART_CR3_EIE);
-
-    /* Enable the DMA transfer for the receiver request by setting the DMAR bit
-    in the UART CR3 register */
     SET_BIT(uart_instance->serial_instantce->CR3, USART_CR3_DMAR);
 }
 
 MyUart::~MyUart() {
     // TODO Auto-generated destructor stub
-    __HAL_RCC_USART2_CLK_DISABLE();
     delete(gpio_rx);
     delete(gpio_tx);
     delete(tx_dma);
     delete(rx_dma);
 
-    /* DeInit the low level hardware */
-    __HAL_RCC_USART2_CLK_DISABLE();
-    HAL_NVIC_DisableIRQ(USART2_IRQn);
+    RCC->AHB1ENR &= (   (~uart_instance->uart_clck_mask) &
+                        (~uart_instance->dma_clck_mask) &
+                        (~uart_instance->gpio_clck_mask)   );
+
+    HAL_NVIC_DisableIRQ(uart_instance->tx_irq);
+    HAL_NVIC_DisableIRQ(uart_instance->rx_irq);
+    uart_instance->serial_instantce->CR1 = 0;
+    uart_instance->serial_instantce->CR2 = 0;
+    uart_instance->serial_instantce->CR3 = 0;
 }
 
 void MyUart::dma_tx_pause(void)

@@ -7,6 +7,7 @@
 #include <cmsis-plus/rtos/os.h>
 #include "MyUart.h"
 #include "string.h"
+#include "globals.h"
 
 using namespace os;
 using namespace os::rtos;
@@ -77,7 +78,7 @@ GPIO_InitTypeDef cli_gpio_tx_init =
     .Alternate = GPIO_AF7_USART2
 };
 
-uart_instance_t cli_uart_inst =
+STM32F407::uart_instance_t cli_uart_inst =
 {
     serial_instantce: USART2,
     serial_init: &cli_uart_init,
@@ -88,10 +89,15 @@ uart_instance_t cli_uart_inst =
     rx_gpio_port: GPIOA,
     rx_gpio_init: &cli_gpio_rx_init,
     tx_gpio_port: GPIOA,
-    tx_gpio_init: &cli_gpio_tx_init
+    tx_gpio_init: &cli_gpio_tx_init,
+    tx_irq: USART2_IRQn,
+    rx_irq: DMA1_Stream5_IRQn,
+    uart_clck_mask: RCC_APB1ENR_USART2EN,
+    dma_clck_mask: RCC_AHB1ENR_DMA1EN,
+    gpio_clck_mask: RCC_AHB1ENR_GPIOAEN
 };
 
-static MyUart cli_uart(&cli_uart_inst);
+static STM32F407::MyUart cli_uart(&cli_uart_inst);
 
 message_queue_typed<cli_msg_t> cli_queue { 100 };
 
@@ -112,6 +118,8 @@ void DMA1_Stream5_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
     cli_uart.isr_cb();
+    cli_msg_t msg_tx_finished = TX_FINISHED;
+    cli_queue.try_send(&msg_tx_finished);
 }
 }
 
@@ -123,6 +131,7 @@ void func(void* args)
 
 void *thread_cli(void *args)
 {
+    /*
     char str[] = "strtok needs to be called several times to split a string";
     int init_size = strlen(str);
     char delim[] = " ";
@@ -135,26 +144,23 @@ void *thread_cli(void *args)
         ptr = strtok(NULL, delim);
     }
 
-    /* This loop will show that there are zeroes in the str after tokenizing */
     for (int i = 0; i < init_size; i++)
     {
-        trace_printf("%d ", str[i]); /* Convert the character to integer, in this case
-                               the character's ASCII equivalent */
+        trace_printf("%d ", str[i]);
     }
     trace_printf ("\n");
-
+    */
 
 
 
     cli_msg_t cli_msg;
     uint8_t i;
-    int j;
-    uint8_t rx_buffer = 0;
+    volatile uint8_t rx_buffer = 0;
     uint8_t command_buffer[128] = {};
     uint8_t command_index = 0;
     timer timer {func, nullptr, timer::periodic_initializer};
 
-    SET_BIT(cli_uart_inst.serial_instantce->CR1, USART_CR1_RXNEIE);
+    //SET_BIT(cli_uart_inst.serial_instantce->CR1, USART_CR1_RXNEIE);
     cli_uart.receive(&rx_buffer, 1);
     timer.start(sysclock.frequency_hz);
     while(1)
@@ -167,7 +173,10 @@ void *thread_cli(void *args)
             {
                 command_index++;
                 cli_uart.transmit(command_buffer, command_index);
-                sysclock.sleep_for (10);
+                while (TX_FINISHED != cli_msg)
+                {
+                    cli_queue.receive(&cli_msg);
+                }
                 for (i = 0; i <= command_index; i++)
                 {
                     command_buffer[i] = 0;

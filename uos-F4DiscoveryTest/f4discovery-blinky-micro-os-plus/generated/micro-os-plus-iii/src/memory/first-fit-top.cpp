@@ -42,7 +42,7 @@ namespace os
      */
     first_fit_top::~first_fit_top ()
     {
-      trace::printf ("first_fit_top::%s() @%p %s\n", __func__, this, name ());
+      //trace::printf ("first_fit_top::%s() @%p %s\n", __func__, this, name ());
     }
 
     /**
@@ -369,10 +369,10 @@ namespace os
           free_bytes_ -= chunk->size;
           ++allocated_chunks_;
           --free_chunks_;
-
+          /*
           trace::printf ("first_fit_top::%s(%p,%u,%u) @%p %s already freed\n",
                          __func__, addr, bytes, alignment, this, name ());
-
+          */
           return;
         }
       // Does not match if next_chunk == nullptr.

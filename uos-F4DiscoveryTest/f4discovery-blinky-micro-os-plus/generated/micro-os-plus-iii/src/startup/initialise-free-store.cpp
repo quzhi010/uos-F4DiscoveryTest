@@ -87,7 +87,7 @@ void __attribute__((weak))
 os_startup_initialize_free_store (void* heap_address,
                                   std::size_t heap_size_bytes)
 {
-  trace::printf ("%s(%p,%u)\n", __func__, heap_address, heap_size_bytes);
+  //trace::printf ("%s(%p,%u)\n", __func__, heap_address, heap_size_bytes);
 
 #if !defined(OS_EXCLUDE_DYNAMIC_MEMORY_ALLOCATIONS)
 

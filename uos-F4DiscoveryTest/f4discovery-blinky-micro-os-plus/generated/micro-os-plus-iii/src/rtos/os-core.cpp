@@ -185,7 +185,7 @@ namespace os
       [[noreturn]] void
       start (void)
       {
-        trace::printf ("scheduler::%s() \n", __func__);
+        //trace::printf ("scheduler::%s() \n", __func__);
 
         // Don't call this from interrupt handlers.
         os_assert_throw(!interrupts::in_handler_mode (), EPERM);

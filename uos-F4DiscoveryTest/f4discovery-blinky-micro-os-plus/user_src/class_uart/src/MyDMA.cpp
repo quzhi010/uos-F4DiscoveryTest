@@ -7,6 +7,8 @@
 
 #include "MyDMA.h"
 
+using namespace STM32F407;
+
 typedef struct
 {
   __IO uint32_t ISR;   /*!< DMA interrupt status register */

@@ -90,7 +90,7 @@ namespace std
   new_handler
   set_new_handler (new_handler handler) noexcept
   {
-    trace::printf ("std::%s(%p) \n", __func__, handler);
+    //trace::printf ("std::%s(%p) \n", __func__, handler);
 
     new_handler prev_handler;
 

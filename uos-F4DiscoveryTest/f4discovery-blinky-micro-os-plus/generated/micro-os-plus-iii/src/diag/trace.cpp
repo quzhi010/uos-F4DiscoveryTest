@@ -139,6 +139,7 @@ namespace os
     void __attribute__((weak))
     dump_args (int argc, char* argv[])
     {
+        /*
       printf ("main(argc=%d, argv=[", argc);
       for (int i = 0; i < argc; ++i)
         {
@@ -149,6 +150,7 @@ namespace os
           printf ("\"%s\"", argv[i]);
         }
       printf ("]);\n");
+      */
     }
 
   } /* namespace trace */

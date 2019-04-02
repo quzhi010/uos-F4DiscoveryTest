@@ -260,7 +260,23 @@ __weak HAL_StatusTypeDef HAL_RCC_OscConfig(RCC_OscInitTypeDef  *RCC_OscInitStruc
     else
     {
       /* Set the new HSE configuration ---------------------------------------*/
-      __HAL_RCC_HSE_CONFIG(RCC_OscInitStruct->HSEState);
+      //__HAL_RCC_HSE_CONFIG(RCC_OscInitStruct->HSEState);
+      do {
+        if ((RCC_OscInitStruct->HSEState) == RCC_HSE_ON)
+        {
+          SET_BIT(RCC->CR, RCC_CR_HSEON);
+        }
+        else if ((RCC_OscInitStruct->HSEState) == RCC_HSE_BYPASS)
+        {
+          SET_BIT(RCC->CR, RCC_CR_HSEBYP);
+          SET_BIT(RCC->CR, RCC_CR_HSEON);
+        }
+        else
+        {
+          CLEAR_BIT(RCC->CR, RCC_CR_HSEON);
+          CLEAR_BIT(RCC->CR, RCC_CR_HSEBYP);
+        }
+      } while(0);
       
       /* Check the HSE State */
       if((RCC_OscInitStruct->HSEState) != RCC_HSE_OFF)

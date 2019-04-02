@@ -54,7 +54,7 @@ namespace os
 #if defined(__EXCEPTIONS)
       throw std::bad_alloc ();
 #else
-      trace::printf ("bad_alloc()\n");
+      //trace::printf ("bad_alloc()\n");
       std::abort ();
 #endif
     }
@@ -66,7 +66,7 @@ namespace os
       memory_resource*
       set_default_resource (memory_resource* res) noexcept
       {
-        trace::printf ("estd::pmr::%s(%p) \n", __func__, res);
+        //trace::printf ("estd::pmr::%s(%p) \n", __func__, res);
 
         memory_resource* old = default_resource;
         default_resource = res;

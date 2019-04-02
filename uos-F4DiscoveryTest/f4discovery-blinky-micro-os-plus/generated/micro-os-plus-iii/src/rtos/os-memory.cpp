@@ -83,7 +83,7 @@ namespace os
           {
             guard = 1;
 
-            trace::printf ("rtos::memory::%s() \n", __func__);
+            //trace::printf ("rtos::memory::%s() \n", __func__);
 
             new (&malloc_res) os::memory::malloc_memory_resource ("malloc");
             new (&null_res) os::memory::null_memory_resource ();
@@ -207,7 +207,7 @@ namespace os
       memory_resource*
       set_default_resource (memory_resource* res) noexcept
       {
-        trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+        //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
         memory_resource* old = default_resource;
         default_resource = res;
@@ -227,7 +227,7 @@ namespace os
         memory_resource*
         set_resource_typed<thread> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_thread;
           resource_thread = res;
@@ -245,7 +245,7 @@ namespace os
         memory_resource*
         set_resource_typed<condition_variable> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_condition_variable;
           resource_condition_variable = res;
@@ -263,7 +263,7 @@ namespace os
         memory_resource*
         set_resource_typed<event_flags> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_event_flags;
           resource_event_flags = res;
@@ -281,7 +281,7 @@ namespace os
         memory_resource*
         set_resource_typed<memory_pool> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_memory_pool;
           resource_memory_pool = res;
@@ -299,7 +299,7 @@ namespace os
         memory_resource*
         set_resource_typed<message_queue> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_message_queue;
           resource_message_queue = res;
@@ -317,7 +317,7 @@ namespace os
         memory_resource*
         set_resource_typed<mutex> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_mutex;
           resource_mutex = res;
@@ -335,7 +335,7 @@ namespace os
         memory_resource*
         set_resource_typed<semaphore> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_semaphore;
           resource_semaphore = res;
@@ -353,7 +353,7 @@ namespace os
         memory_resource*
         set_resource_typed<timer> (memory_resource* res) noexcept
         {
-          trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
+          //trace::printf ("rtos::memory::%s(%p) \n", __func__, res);
 
           memory_resource* old = resource_timer;
           resource_timer = res;

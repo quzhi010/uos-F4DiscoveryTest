@@ -10,13 +10,15 @@
 
 #include "main.h"
 
-class MyGPIO {
-    private:
-        GPIO_TypeDef    *GPIO_Port;
-        uint32_t        GPIO_Pin;
-    public:
-        MyGPIO(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init);
-        virtual ~MyGPIO();
-};
+namespace STM32F407 {
+    class MyGPIO {
+        private:
+            GPIO_TypeDef    *GPIO_Port;
+            uint32_t        GPIO_Pin;
+        public:
+            MyGPIO(GPIO_TypeDef  *GPIOx, GPIO_InitTypeDef *GPIO_Init);
+            virtual ~MyGPIO();
+    };
+}
 
 #endif /* CLASS_UART_SRC_MYGPIO_H_ */

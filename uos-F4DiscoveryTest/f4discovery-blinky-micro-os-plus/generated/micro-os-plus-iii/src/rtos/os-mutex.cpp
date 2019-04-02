@@ -856,7 +856,7 @@ namespace os
     mutex::internal_mark_owner_dead_ (void)
     {
       // May return error if not the rightful owner.
-      trace::printf ("%s() @%p %s\n", __func__, this, name ());
+      //trace::printf ("%s() @%p %s\n", __func__, this, name ());
 
       if (robustness_ == mutex::robustness::robust)
         {

@@ -72,7 +72,7 @@ namespace
     trace::dump_args (main_args.argc, main_args.argv);
 
     int code = os_main (main_args.argc, main_args.argv);
-    trace::printf ("%s() exit = %d\n", __func__, code);
+    //trace::printf ("%s() exit = %d\n", __func__, code);
 
     // Exit will run the atexit() and destructors, then
     // terminate gracefully.
@@ -113,7 +113,7 @@ __attribute__((weak))
 main (int argc, char* argv[])
 {
   using namespace os::rtos;
-
+/*
   trace::printf ("\nµOS++ IIIe version " OS_STRING_RTOS_IMPL_VERSION ".\n");
   trace::printf ("Copyright (c) 2007-" OS_STRING_RTOS_IMPL_YEAR " Liviu Ionescu.\n");
 
@@ -126,8 +126,8 @@ main (int argc, char* argv[])
 #if defined(OS_HAS_INTERRUPTS_STACK)
   trace::printf ("Interrupts stack size: %u bytes.\n",
                  interrupts::stack ()->size ());
-#endif /* defined(OS_HAS_INTERRUPTS_STACK) */
-
+#endif*/ /* defined(OS_HAS_INTERRUPTS_STACK) */
+/*
 #if defined(__clang__)
   trace::printf ("Built with clang " __VERSION__);
 #else
@@ -140,7 +140,7 @@ main (int argc, char* argv[])
   trace::printf (", no exceptions");
 #endif
   trace::puts (".\n");
-
+*/
   scheduler::initialize ();
 
   // Store the parameters in the static structure, to be used by os_main().
@@ -188,7 +188,7 @@ os_terminate_goodbye (void)
 {
 #if defined(TRACE)
 
-  trace::printf ("\n");
+  //trace::printf ("\n");
 
 #if !defined(OS_EXCLUDE_DYNAMIC_MEMORY_ALLOCATIONS)
 
@@ -202,19 +202,21 @@ os_terminate_goodbye (void)
 #endif /* !defined(OS_EXCLUDE_DYNAMIC_MEMORY_ALLOCATIONS) */
 
   class rtos::thread::stack& st = os_main_thread->stack ();
-
+/*
   trace::printf ("Main thread stack: %u/%u bytes used\n",
                  st.size () - st.available (), st.size ());
-
+*/
 #if defined(OS_HAS_INTERRUPTS_STACK)
+  /*
   trace::printf (
       "Interrupts stack: %u/%u bytes used\n",
       rtos::interrupts::stack ()->size ()
           - rtos::interrupts::stack ()->available (),
       rtos::interrupts::stack ()->size ());
+  */
 #endif /* defined(OS_HAS_INTERRUPTS_STACK) */
 
-  trace::printf ("\nHasta la Vista!\n");
+  //trace::printf ("\nHasta la Vista!\n");
 
 #endif /* defined(TRACE) */
 }

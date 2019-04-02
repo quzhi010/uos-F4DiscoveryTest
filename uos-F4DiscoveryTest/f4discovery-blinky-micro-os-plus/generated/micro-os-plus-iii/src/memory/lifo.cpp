@@ -42,7 +42,7 @@ namespace os
      */
     lifo::~lifo ()
     {
-      trace::printf ("lifo::%s() @%p %s\n", __func__, this, this->name ());
+      //trace::printf ("lifo::%s() @%p %s\n", __func__, this, this->name ());
     }
 
 #pragma GCC diagnostic push
