@@ -15,9 +15,9 @@ MyUart::MyUart(uart_instance_t *uart_inst) {
     __HAL_RCC_USART2_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
-    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 15, 15);
     HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(USART2_IRQn, 15, 15);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
 
     gpio_rx = new MyGPIO(uart_inst->rx_gpio_port, uart_inst->rx_gpio_init);

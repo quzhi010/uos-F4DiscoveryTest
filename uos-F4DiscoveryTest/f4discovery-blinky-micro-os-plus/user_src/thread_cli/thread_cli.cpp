@@ -6,6 +6,7 @@
  */
 #include <cmsis-plus/rtos/os.h>
 #include "MyUart.h"
+#include "string.h"
 
 using namespace os;
 using namespace os::rtos;
@@ -13,7 +14,8 @@ using namespace os::rtos;
 typedef enum
 {
     PERIODIC_RX_CHECK = 0,
-    TX_FINISHED = 1
+    RX_RECEIVED = 1,
+    TX_FINISHED = 2
 } cli_msg_t;
 
 DMA_InitTypeDef cli_uart_rx_init =
@@ -91,19 +93,20 @@ uart_instance_t cli_uart_inst =
 
 static MyUart cli_uart(&cli_uart_inst);
 
-message_queue_typed<cli_msg_t> cli_queue { 20 };
+message_queue_typed<cli_msg_t> cli_queue { 100 };
 
 void *thread_cli(void *args);
 thread_inclusive<1024> thread_cli_object { "thread_cli", thread_cli, nullptr };
 
 uint8_t tx_test2[14] = "Hello quzhi\r\n";
-uint8_t rx_test[15] = {0};
 
 extern "C" {
 // RX DMA full interrupt
 void DMA1_Stream5_IRQHandler(void)
 {
     cli_uart.rx_dma->isr_cb();
+    cli_msg_t msg_rx_received = RX_RECEIVED;
+    cli_queue.try_send(&msg_rx_received);
 }
 // TX DMA empty interrupt
 void USART2_IRQHandler(void)
@@ -120,17 +123,63 @@ void func(void* args)
 
 void *thread_cli(void *args)
 {
+    char str[] = "strtok needs to be called several times to split a string";
+    int init_size = strlen(str);
+    char delim[] = " ";
+
+    char *ptr = strtok(str, delim);
+
+    while(ptr != NULL)
+    {
+        trace_printf("str splitted '%s'\n", ptr);
+        ptr = strtok(NULL, delim);
+    }
+
+    /* This loop will show that there are zeroes in the str after tokenizing */
+    for (int i = 0; i < init_size; i++)
+    {
+        trace_printf("%d ", str[i]); /* Convert the character to integer, in this case
+                               the character's ASCII equivalent */
+    }
+    trace_printf ("\n");
+
+
+
+
     cli_msg_t cli_msg;
-    int i;
+    uint8_t i;
     int j;
+    uint8_t rx_buffer = 0;
+    uint8_t command_buffer[128] = {};
+    uint8_t command_index = 0;
     timer timer {func, nullptr, timer::periodic_initializer};
 
     SET_BIT(cli_uart_inst.serial_instantce->CR1, USART_CR1_RXNEIE);
-    cli_uart.receive(rx_test, 15);
+    cli_uart.receive(&rx_buffer, 1);
     timer.start(sysclock.frequency_hz);
     while(1)
     {
         cli_queue.receive(&cli_msg);
+        if (RX_RECEIVED == cli_msg)
+        {
+            command_buffer[command_index] = rx_buffer;
+            if ('\r' == command_buffer[command_index])
+            {
+                command_index++;
+                cli_uart.transmit(command_buffer, command_index);
+                sysclock.sleep_for (10);
+                for (i = 0; i <= command_index; i++)
+                {
+                    command_buffer[i] = 0;
+                }
+                command_index = 0;
+            }
+            else
+            {
+                command_index = (command_index + 1)%128;
+            }
+        }
+        /*
         cli_uart.dma_rx_pause();
         for (i = 0; i < 15; i++)
         {
@@ -148,7 +197,7 @@ void *thread_cli(void *args)
                 cli_uart.dma_rx_resume();
             }
         }
-        cli_uart.transmit(tx_test2, 13);
+        */
     }
     return NULL;
 }

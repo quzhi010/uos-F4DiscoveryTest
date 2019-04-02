@@ -111,9 +111,6 @@ void MyDMA::dma_start_it(uint32_t SrcAddress, uint32_t DstAddress, uint32_t Data
   /* calculate DMA base and stream number */
   DMA_Base_Registers *regs = (DMA_Base_Registers *)StreamBaseAddress;
 
-  /* Check the parameters */
-  assert_param(IS_DMA_BUFFER_SIZE(DataLength));
-
     /* Configure the source, destination address and the data length */
     dma_set_config(SrcAddress, DstAddress, DataLength);
 
@@ -201,6 +198,17 @@ void MyDMA::dma_calc_base_and_bitshift(void)
     {
         /* return pointer to LISR and LIFCR */
         StreamBaseAddress = ((uint32_t)dma_handle & (uint32_t)(~0x3FFU));
+    }
+}
+
+void MyDMA::clear_intr(void)
+{
+    uint32_t tmpisr;
+    DMA_Base_Registers *regs = (DMA_Base_Registers *)StreamBaseAddress;
+    tmpisr = regs->ISR;
+    if (tmpisr & (DMA_FLAG_TCIF0_4 << StreamIndex))
+    {
+        regs->IFCR = DMA_FLAG_TCIF0_4 << StreamIndex;
     }
 }
 

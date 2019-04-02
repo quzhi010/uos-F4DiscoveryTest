@@ -25,6 +25,7 @@ class MyDMA {
         void dma_start(uint32_t SrcAddress, uint32_t DstAddress, uint32_t DataLength);
         void abort(void);
         void isr_cb(void);
+        void clear_intr(void);
         virtual ~MyDMA();
 };
 
