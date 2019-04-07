@@ -54,7 +54,6 @@
 // the memory banks in system/src/cmsis/system_stm32f4xx.c to match your needs.
 
 // ----------------------------------------------------------------------------
-
 // ----------------------------------------------------------------------------
 
 // This is the application hardware initialisation routine,
@@ -68,55 +67,56 @@
 //
 // Warning: The HAL requires the system timer, running at 1000 Hz
 // and calling HAL_IncTick().
-
+#define USE_CUBE_MX
 void
 os_startup_initialize_hardware(void)
 {
-  // Initialise the HAL Library; it must be the first function
-  // to be executed before the call of any HAL function.
+#ifndef USE_CUBE_MX
+    __IO uint32_t tmpreg = 0x00U;
     FLASH->ACR |= FLASH_ACR_ICEN;
     FLASH->ACR |= FLASH_ACR_DCEN;
     FLASH->ACR |= FLASH_ACR_PRFTEN;
     NVIC_SetPriority(PendSV_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0U));
+    SysTick_Config(SystemCoreClock/1000U);
 
-    __IO uint32_t tmpreg = 0x00U;
-    PWR->CR &=   (~PWR_CR_VOS) | (PWR_REGULATOR_VOLTAGE_SCALE1);
-    tmpreg = PWR->CR & PWR_CR_VOS;
-    UNUSED(tmpreg);
-
-    RCC->CR = RCC_CR_HSEON;
-    while(RCC->CR == RESET);
-    RCC->PLLCFGR =  (RCC_PLLCFGR_PLLSRC_HSE_Msk |
-                     4U |
-                     (168U << POSITION_VAL(RCC_PLLCFGR_PLLN)) |
-                     (4U << POSITION_VAL(RCC_PLLCFGR_PLLQ)));
-    *(__IO uint32_t *) RCC_CR_PLLON_BB = ENABLE;
-
-    *(__IO uint8_t *)ACR_BYTE0_ADDRESS = (uint8_t)(FLASH_LATENCY_5);
-    RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_HPRE)) | (RCC_SYSCLK_DIV1);
-    RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_SW)) | RCC_SYSCLKSOURCE_PLLCLK;
-    RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_PPRE1)) | RCC_HCLK_DIV4;
-    RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_PPRE2)) | ((RCC_HCLK_DIV2) << 3U);
-    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-    tmpreg = RCC->APB2ENR  & RCC_APB2ENR_SYSCFGEN;
-    UNUSED(tmpreg);
-    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    tmpreg = RCC->APB1ENR & RCC_APB1ENR_PWREN;
-    UNUSED(tmpreg);
+    NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+	tmpreg = RCC->APB2ENR  & RCC_APB2ENR_SYSCFGEN;
+	UNUSED(tmpreg);
+	RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+	tmpreg = RCC->APB1ENR & RCC_APB1ENR_PWREN;
+	UNUSED(tmpreg);
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOHEN;
     tmpreg = RCC->AHB1ENR & RCC_AHB1ENR_GPIOHEN;
     UNUSED(tmpreg);
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     tmpreg = RCC->AHB1ENR & RCC_AHB1ENR_GPIOAEN;
     UNUSED(tmpreg);
-    SystemCoreClock = HAL_RCC_GetSysClockFreq();
-    SysTick_Config(SystemCoreClock/1000U);
-    NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0U));
-    NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), NVIC_PRIORITYGROUP_4, 0U));
+    PWR->CR &=   (~PWR_CR_VOS) | (PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  // Call the CSMSIS system clock routine to store the clock frequency
-  // in the SystemCoreClock global RAM location.
-  //SystemCoreClockUpdate();
+    RCC->CR |= RCC_CR_HSEON;
+    while(__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) == RESET)
+    	*(__IO uint32_t *) RCC_CR_PLLON_BB = DISABLE;
+    while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLLRDY) != RESET)
+	RCC->PLLCFGR =  (RCC_PLLCFGR_PLLSRC_HSE_Msk |
+					 4U |
+					 (168U << POSITION_VAL(RCC_PLLCFGR_PLLN)) |
+					 (4U << POSITION_VAL(RCC_PLLCFGR_PLLQ)));
+    *(__IO uint32_t *) RCC_CR_PLLON_BB = ENABLE;
+    while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLLRDY) == RESET);
+    const uint8_t APBAHBPrescTable[16] = {0U, 0U, 0U, 0U, 1U, 2U, 3U, 4U, 1U, 2U, 3U, 4U, 6U, 7U, 8U, 9U};
+    *(__IO uint8_t *)ACR_BYTE0_ADDRESS = (uint8_t)(FLASH_LATENCY_5);
+    RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_HPRE)) | (RCC_SYSCLK_DIV1);
+    RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_SW)) | RCC_SYSCLKSOURCE_PLLCLK;
+    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_SYSCLKSOURCE_STATUS_PLLCLK);
+	RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_PPRE1)) | RCC_HCLK_DIV4;
+	RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_PPRE2)) | ((RCC_HCLK_DIV2) << 3U);
+	SystemCoreClock = HAL_RCC_GetSysClockFreq() >> APBAHBPrescTable[(RCC->CFGR & RCC_CFGR_HPRE)>> POSITION_VAL(RCC_CFGR_HPRE)];
+	SysTick_Config(SystemCoreClock/1000U);
+	HAL_NVIC_SetPriority(SysTick_IRQn, 0 ,0U);
+#else
+	cube_mx_init();
+#endif
 }
 
 // ----------------------------------------------------------------------------

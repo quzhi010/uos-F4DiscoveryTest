@@ -188,25 +188,6 @@ void *thread_cli(void *args)
                 command_index = (command_index + 1)%128;
             }
         }
-        /*
-        cli_uart.dma_rx_pause();
-        for (i = 0; i < 15; i++)
-        {
-            if (rx_test[i] == '\r')
-            {
-                cli_uart.rx_dma->abort();
-                for (j = 0; j < 15; j++)
-                {
-                    rx_test[j] = 0;
-                }
-                cli_uart.receive(rx_test, 15);
-            }
-            else
-            {
-                cli_uart.dma_rx_resume();
-            }
-        }
-        */
     }
     return NULL;
 }

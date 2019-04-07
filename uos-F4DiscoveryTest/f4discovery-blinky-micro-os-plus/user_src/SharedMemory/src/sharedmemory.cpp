@@ -42,8 +42,7 @@ uint8_t * shared_memory::shared_memory::get_buffer(void) {
 
 uint32_t shared_memory::shared_memory::ret_buffer(uint8_t *buffer_ptr) {
     // TODO Auto-generated constructor stub
-    uint8_t *buffer_ptr_reg;
-    if (0 == msg_queue_ptr_queue->try_send(&buffer_ptr_reg))
+    if (0 == msg_queue_ptr_queue->try_send(&buffer_ptr))
     {
         buffer_left++;
         return 0;

@@ -136,6 +136,9 @@ namespace os
         }
     }
 
+#pragma GCC diagnostic push
+// Needed because 'alignment' is used only in trace calls.
+#pragma GCC diagnostic ignored "-Wunused-parameter"
     void __attribute__((weak))
     dump_args (int argc, char* argv[])
     {
@@ -152,6 +155,7 @@ namespace os
       printf ("]);\n");
       */
     }
+#pragma GCC diagnostic pop
 
   } /* namespace trace */
 } /* namespace os */

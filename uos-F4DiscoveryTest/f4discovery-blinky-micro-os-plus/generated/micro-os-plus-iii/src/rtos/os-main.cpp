@@ -201,8 +201,8 @@ os_terminate_goodbye (void)
 
 #endif /* !defined(OS_EXCLUDE_DYNAMIC_MEMORY_ALLOCATIONS) */
 
-  class rtos::thread::stack& st = os_main_thread->stack ();
 /*
+  class rtos::thread::stack& st = os_main_thread->stack ();
   trace::printf ("Main thread stack: %u/%u bytes used\n",
                  st.size () - st.available (), st.size ());
 */
